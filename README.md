@@ -13,6 +13,7 @@ Display movie choices and seats in a theater to select from in order to purchase
 
 
 ## All Java Script algorithms and codes belong to me.
+## https://zemheri25.github.io/movie-seat-app/
 
 <img src = "./image/seat-app.PNG">
 
