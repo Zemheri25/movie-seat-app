@@ -3,42 +3,63 @@ let count = document.getElementById("count");
 let film = document.getElementById("film");
 let total = document.getElementById("total");
 
-let row = document.querySelectorAll(".row");
+let container = document.querySelector(".container");
 
 window.addEventListener("load", () => {
-  let text = movie.options[movie.selectedIndex].text;
-  let firstindex = text.indexOf("(");
-  let newtext = text.slice(0, firstindex);
-  film.innerHTML = newtext;
-});
+  film.innerHTML = "Avengers: Endgame"
+})
 
-for (let i of row) {
-  i.addEventListener("click", (e) => {
-    let seat = e.target;
-    !seat.classList.contains("selected") && !seat.classList.contains("occupied")
-      ? seat.classList.add("selected")
-      : seat.classList.remove("selected");
-    if (
-      seat.classList.contains("selected") &&
-      !seat.classList.contains("occupied")
-    ) {
-      count.innerHTML++;
-    } else if (
-      !seat.classList.contains("selected") &&
-      !seat.classList.contains("occupied")
-    ) {
-      count.innerHTML--;
+
+container.addEventListener("click", (e) => {
+   let seat = e.target;
+   if(seat.classList.contains("seat") && !seat.classList.contains("occupied") && !seat.classList.contains("selected")) {
+     seat.classList.add("selected");
+    count.innerHTML ++;
+    total.innerHTML = Number(movie.value) * Number(count.innerHTML)
+    } 
+    else if (seat.classList.contains("seat") && !seat.classList.contains("occupied") && seat.classList.contains("selected")) {
+      seat.classList.remove("selected");
+      count.innerHTML --;
+      total.innerHTML = Number(movie.value) * Number(count.innerHTML)
     }
+    localStorage(count, film, total)
 
-    total.innerHTML = Number(count.innerHTML) * Number(movie.value);
-  });
-}
+ });
 
-movie.addEventListener("change", (e) => {
-  let text = movie.options[movie.selectedIndex].text;
-  let firstindex = text.indexOf("(");
-  let newtext = text.slice(0, firstindex);
-  film.innerHTML = newtext;
 
-  total.innerHTML = Number(count.innerHTML) * Number(movie.value);
-});
+ movie.addEventListener("change", () => {
+  if(movie.value == 10) {
+    film.innerText = "Avengers: Endgame"
+  }
+  else if(movie.value == 12) {
+    film.innerText = "Joker"
+  }
+  else if(movie.value == 8) {
+    film.innerText = "Toy Story 4"
+  }
+  else if(movie.value == 9) {
+    film.innerText = "The Lion King"
+  }
+  total.innerHTML = Number(movie.value) * Number(count.innerHTML)
+  localStorage(count, film, total)
+ })
+
+ function localStorage(count, film, total) {
+   localStorage.setItem("count", count);
+   localStorage.setItem("film", film);
+   localStorage.setItem("total", total)
+ }
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
