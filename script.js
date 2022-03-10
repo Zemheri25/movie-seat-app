@@ -1,65 +1,73 @@
-let movie = document.getElementById("movie");
-let count = document.getElementById("count");
-let film = document.getElementById("film");
-let total = document.getElementById("total");
+const container = document.querySelector(".container");
+const allSeats = document.querySelectorAll(".container .seat");
+const notOccupiedSeats = document.querySelector(".container .seat:not(.occupied)");
+const count = document.getElementById("count");
+const film = document.getElementById("film");
+const total = document.getElementById("total");
+const movieSelectBox = document.getElementById("movie");
 
-let container = document.querySelector(".container");
+//önce localStorage sonra slectBox
+//initial value == movieSelectBox.value
+//movieSelectBox.options[movieSelectBox.selectedIndex].value == movieSelectBox.value
+//(sayfa yüklenince en güncel movie seat price)
+let currentTicketPrice = localStorage.getItem("selectedMoviePrice") ? localStorage.getItem("selectedMoviePrice") : movieSelectBox.options[movieSelectBox.selectedIndex].value;
 
-window.addEventListener("load", () => {
-  film.innerHTML = "Avengers: Endgame"
-})
+//movieIndex (sayfa yüklenince en güncel movie index)
+let currentMovieIndex = localStorage.getItem("selectedMovieIndex") ? localStorage.getItem("selectedMovieIndex") : movieSelectBox.selectedIndex;
 
+window.onload = () =>{
+    movieSelectBox.selectedIndex = currentMovieIndex;
+    displaySeats();
+    updateMovieInfo();
+}
+movieSelectBox.addEventListener("change", (e)=>{
+    let ticketPrice = e.target.value;
+    let movieIndex = e.target.selectedIndex;
+    console.log(movieIndex);
+    updateMovieInfo();
+    setMovieDataToLocalStorage(ticketPrice, movieIndex);
+});
 
-container.addEventListener("click", (e) => {
-   let seat = e.target;
-   if(seat.classList.contains("seat") && !seat.classList.contains("occupied") && !seat.classList.contains("selected")) {
-     seat.classList.add("selected");
-    count.innerHTML ++;
-    total.innerHTML = Number(movie.value) * Number(count.innerHTML)
-    } 
-    else if (seat.classList.contains("seat") && !seat.classList.contains("occupied") && seat.classList.contains("selected")) {
-      seat.classList.remove("selected");
-      count.innerHTML --;
-      total.innerHTML = Number(movie.value) * Number(count.innerHTML)
+const setMovieDataToLocalStorage = (ticketPrice, movieIndex) => {
+    localStorage.setItem("selectedMovieIndex", movieIndex);
+    localStorage.setItem("selectedMoviePrice", ticketPrice);
+}
+
+container.addEventListener("click", (e)=>{
+    console.log(e.target.classList);
+    if(e.target.classList.contains("seat") && !e.target.classList.contains("occupied")){
+        e.target.classList.toggle("selected");
+        console.log(e.target.classList);
     }
-    localStorage(count, film, total)
+    // if(e.target.classList.contains("seat") && e.target.classList.contains("occupied")){
+    //     alert("lütfen rezerve olmayan koltuk seçiniz!");
+    // }
+    updateMovieInfo();
+});
 
- });
+const updateMovieInfo = () =>{
+    let selectedSeats = document.querySelectorAll(".row .seat.selected");
+    // let selectedSeats2 = document.querySelectorAll(".row .seat .selected");
+
+    let selectedSeatsIndexArray = [...selectedSeats].map(seat => [...allSeats].indexOf(seat));
+    // console.log(selectedSeatsIndexArray);
+    localStorage.setItem("selectedSeats", JSON.stringify(selectedSeatsIndexArray));
+
+    count.innerText = selectedSeatsIndexArray.length;
+    total.innerText = selectedSeatsIndexArray.length * movieSelectBox.value;
+    film.innerText = movieSelectBox.options[movieSelectBox.selectedIndex].innerText.split("(")[0];
 
 
- movie.addEventListener("change", () => {
-  if(movie.value == 10) {
-    film.innerText = "Avengers: Endgame"
+};
+
+const displaySeats = () => {
+  let selectedSeatsFromStorage = JSON.parse(localStorage.getItem("selectedSeats"));
+  console.log(selectedSeatsFromStorage);
+  if(selectedSeatsFromStorage != null && selectedSeatsFromStorage.length > 0) {
+    allSeats.forEach((seat, index) => {
+      if(selectedSeatsFromStorage.indexOf(index) > -1) {
+        seat.classList.add("selected")
+      }
+    })
   }
-  else if(movie.value == 12) {
-    film.innerText = "Joker"
-  }
-  else if(movie.value == 8) {
-    film.innerText = "Toy Story 4"
-  }
-  else if(movie.value == 9) {
-    film.innerText = "The Lion King"
-  }
-  total.innerHTML = Number(movie.value) * Number(count.innerHTML)
-  localStorage(count, film, total)
- })
-
- function localStorage(count, film, total) {
-   localStorage.setItem("count", count);
-   localStorage.setItem("film", film);
-   localStorage.setItem("total", total)
- }
-  
-
-
-
-
-
-
-
-
-
-
-
-
-
+}
